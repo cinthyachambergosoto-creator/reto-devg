@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reto NTT Data - Lista de Personas</title>
+  <style>
+    /* Estilos mínimos para que se vea ordenado (opcional, puedes quitar) */
+    body { font-family: Arial, sans-serif; background:#f7f7f7; margin:0; padding:20px; }
+    header{ text-align:center; margin-bottom:20px; }
+    main{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
+    section.card{ background:#fff; border-radius:8px; padding:12px; width:220px; box-shadow:0 2px 6px rgba(0,0,0,0.08); text-align:center; }
+    img{ border-radius:50%; }
+    footer{ text-align:center; margin-top:18px; font-size:13px; color:#555; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Generador de Personas Aleatorias</h1>
+    <p>Consumido desde: <a href="https://randomuser.me/" target="_blank">randomuser.me</a></p>
+  </header>
+
+  <main id="personas">
+    <p>Cargando datos...</p>
+  </main>
+
+  <footer>
+    <p>Desarrollado por <strong>Cinthya</strong> | Reto Salesforce Bootcamp - NTT Data</p>
+  </footer>
+
+  <script>
+    // 1) Función para traer datos de la API
+    async function cargarPersonas() {
+      const contenedor = document.getElementById('personas');
+      contenedor.innerHTML = '<p>Cargando datos...</p>';
+      try {
+        const respuesta = await fetch('https://randomuser.me/api/?results=10');
+        if (!respuesta.ok) throw new Error('Respuesta no OK: ' + respuesta.status);
+        const datos = await respuesta.json();
+        mostrarPersonas(datos.results);
+      } catch (error) {
+        contenedor.innerHTML = '<p>Error al cargar los datos. Revisa la consola para más detalles.</p>';
+        console.error('Error en cargarPersonas:', error);
+      }
+    }
+
+    // 2) Función para mostrar los datos en pantalla
+    function mostrarPersonas(personas) {
+      const contenedor = document.getElementById('personas');
+      contenedor.innerHTML = ''; // limpiar contenido anterior
+
+      personas.forEach(p => {
+        const s = document.createElement('section');
+        s.className = 'card';
+        s.innerHTML = `
+          <img src="${p.picture.medium}" alt="Foto de ${p.name.first}" width="96" height="96">
+          <h3>${p.name.first} ${p.name.last}</h3>
+          <p><strong>Género:</strong> ${p.gender}</p>
+          <p><strong>Ubicación:</strong> ${p.location.country}</p>
+          <p><strong>Email:</strong> ${p.email}</p>
+          <p><strong>Nac:</strong> ${new Date(p.dob.date).toLocaleDateString()}</p>
+        `;
+        contenedor.appendChild(s);
+      });
+    }
+
+    // 3) Ejecutar al cargar la página
+    cargarPersonas();
+  </script>
+</body>
+</html>
